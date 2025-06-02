@@ -1,73 +1,165 @@
-# Welcome to your Lovable project
 
-## Project info
+# Expense Tracker
 
-**URL**: https://lovable.dev/projects/1717edf6-155d-44c9-a683-a368bd5ca25e
+A modern, feature-rich expense tracking application built with React, TypeScript, and Tailwind CSS. Track your income and expenses, visualize your spending patterns, and manage your financial data with an intuitive interface.
 
-## How can I edit this code?
+## 🚀 Features
 
-There are several ways of editing your application.
+### Core Functionality
+- **Add Transactions**: Record income (credit) and expense (debit) transactions with detailed information
+- **Transaction Management**: View, filter, and delete transactions with ease
+- **Real-time Summary**: See your total income, expenses, and current balance at a glance
+- **Data Persistence**: Automatic local storage saves your data between sessions
 
-**Use Lovable**
+### Advanced Features
+- **Interactive Charts**: Visualize your spending patterns with responsive charts
+- **Smart Filtering**: Filter transactions by type (credit/debit) and date range
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
+- **Dark/Light Theme**: Toggle between themes for comfortable viewing
+- **Category Management**: Organize transactions with customizable categories
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/1717edf6-155d-44c9-a683-a368bd5ca25e) and start prompting.
+### User Experience
+- **Toast Notifications**: Instant feedback for all actions
+- **Form Validation**: Comprehensive input validation with helpful error messages
+- **Intuitive UI**: Clean, modern interface built with shadcn/ui components
+- **Keyboard Accessible**: Full keyboard navigation support
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠️ Technology Stack
 
-**Use your preferred IDE**
+- **Frontend Framework**: React 18 with TypeScript
+- **Build Tool**: Vite for fast development and optimized builds
+- **Styling**: Tailwind CSS for utility-first styling
+- **UI Components**: shadcn/ui component library
+- **State Management**: React Context API with local storage persistence
+- **Charts**: Recharts for interactive data visualization
+- **Date Handling**: date-fns for robust date operations
+- **Form Management**: React Hook Form with Zod validation
+- **Icons**: Lucide React for consistent iconography
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 📦 Installation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prerequisites
+- Node.js (version 16 or higher)
+- npm or yarn package manager
 
-Follow these steps:
+### Setup Instructions
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+1. **Clone the repository**
+   ```bash
+   git clone <YOUR_GIT_URL>
+   cd <YOUR_PROJECT_NAME>
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+4. **Open your browser**
+   Navigate to `http://localhost:8080` to view the application
 
-**Edit a file directly in GitHub**
+## 🎯 Usage
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Adding a Transaction
+1. Click the "Add Transaction" button
+2. Fill in the transaction details:
+   - Amount (required)
+   - Type: Credit (income) or Debit (expense)
+   - Description (required)
+   - Date and time
+   - Category (optional)
+3. Click "Add Transaction" to save
 
-**Use GitHub Codespaces**
+### Filtering Transactions
+- Use the filter dropdown to show all transactions, only credits, or only debits
+- Select a date range using the date picker to filter by time period
+- Combine filters for more specific results
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Managing Data
+- Delete transactions by clicking the delete button in the transaction list
+- All data is automatically saved to your browser's local storage
+- Data persists between browser sessions
 
-## What technologies are used for this project?
+## 📊 Dashboard Overview
 
-This project is built with:
+The main dashboard provides:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Summary Cards
+- **Total Credit**: Sum of all income transactions
+- **Total Debit**: Sum of all expense transactions  
+- **Balance**: Net difference between credits and debits
 
-## How can I deploy this project?
+### Transaction List
+- Chronological list of all transactions
+- Color-coded by type (green for credit, red for debit)
+- Quick actions for each transaction
 
-Simply open [Lovable](https://lovable.dev/projects/1717edf6-155d-44c9-a683-a368bd5ca25e) and click on Share -> Publish.
+### Interactive Chart
+- Visual representation of your financial data
+- Responsive design adapts to screen size
+- Clear distinction between income and expenses
 
-## Can I connect a custom domain to my Lovable project?
+## 🔧 Configuration
 
-Yes, you can!
+### Customizing Categories
+Edit the category options in the transaction form by modifying the category dropdown in the AddTransactionDialog component.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Theming
+The application supports both light and dark themes. The theme preference is automatically saved and restored on subsequent visits.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Local Storage
+Transaction data is stored in your browser's local storage under the key `expense-tracker-transactions`. This ensures your data persists between sessions without requiring a backend.
+
+## 🚀 Deployment
+
+### Using Lovable (Recommended)
+1. Open your [Lovable Project](https://lovable.dev/projects/1717edf6-155d-44c9-a683-a368bd5ca25e)
+2. Click on "Share" → "Publish"
+3. Your app will be deployed and accessible via a public URL
+
+### Manual Deployment
+1. Build the application:
+   ```bash
+   npm run build
+   ```
+2. Deploy the `dist` folder to your preferred hosting service (Vercel, Netlify, etc.)
+
+## 🔗 Custom Domain
+
+To connect a custom domain:
+1. Navigate to Project > Settings > Domains in Lovable
+2. Click "Connect Domain"
+3. Follow the setup instructions
+4. Note: A paid Lovable plan is required for custom domains
+
+## 🤝 Contributing
+
+This project was built with Lovable. To contribute:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 🆘 Support
+
+- **Documentation**: [Lovable Docs](https://docs.lovable.dev/)
+- **Community**: [Lovable Discord](https://discord.com/channels/1119885301872070706/1280461670979993613)
+- **Issues**: Create an issue in this repository
+
+## 🎬 Demo
+
+Visit the live demo at: `https://lovable.dev/projects/1717edf6-155d-44c9-a683-a368bd5ca25e`
+
+---
+
+Built with ❤️ using [Lovable](https://lovable.dev)
