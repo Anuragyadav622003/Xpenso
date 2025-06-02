@@ -19,7 +19,7 @@ export interface TransactionFormData {
 
 export interface DateRange {
   from: Date | undefined;
-  to: Date | undefined;
+  to?: Date | undefined;
 }
 
 export interface FilterOptions {

@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Transaction, FilterOptions } from '../types/transaction';
 import { toast } from '@/hooks/use-toast';
 
@@ -62,11 +62,20 @@ const demoTransactions: Transaction[] = [
 ];
 
 export const TransactionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [transactions, setTransactions] = useState<Transaction[]>(demoTransactions);
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    const saved = localStorage.getItem('expense-tracker-transactions');
+    return saved ? JSON.parse(saved) : demoTransactions;
+  });
+  
   const [filters, setFilters] = useState<FilterOptions>({
     type: 'all',
     dateRange: { from: undefined, to: undefined }
   });
+
+  // Save to localStorage whenever transactions change
+  useEffect(() => {
+    localStorage.setItem('expense-tracker-transactions', JSON.stringify(transactions));
+  }, [transactions]);
 
   const addTransaction = (transactionData: Omit<Transaction, 'id'>) => {
     const newTransaction: Transaction = {
