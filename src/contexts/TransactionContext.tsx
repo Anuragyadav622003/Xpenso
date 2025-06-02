@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Transaction, FilterOptions } from '../types/transaction';
 import { toast } from '@/hooks/use-toast';
@@ -61,10 +60,27 @@ const demoTransactions: Transaction[] = [
   }
 ];
 
+// Helper function to parse transactions and convert date strings back to Date objects
+const parseTransactions = (transactions: any[]): Transaction[] => {
+  return transactions.map(transaction => ({
+    ...transaction,
+    date: new Date(transaction.date)
+  }));
+};
+
 export const TransactionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
     const saved = localStorage.getItem('expense-tracker-transactions');
-    return saved ? JSON.parse(saved) : demoTransactions;
+    if (saved) {
+      try {
+        const parsedTransactions = JSON.parse(saved);
+        return parseTransactions(parsedTransactions);
+      } catch (error) {
+        console.error('Error parsing transactions from localStorage:', error);
+        return demoTransactions;
+      }
+    }
+    return demoTransactions;
   });
   
   const [filters, setFilters] = useState<FilterOptions>({
