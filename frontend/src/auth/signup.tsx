@@ -13,9 +13,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useSignUpMutation } from "@/redux/services/authApi";
+import { toast } from "sonner";
 
 export function SignUpForm() {
+    const [signUp, { isLoading }] = useSignUpMutation();
+    const navigate = useNavigate();
   const form = useForm<TSignUpForm>({
     resolver: zodResolver(SignUpFormSchema),
     defaultValues: {
@@ -27,9 +31,20 @@ export function SignUpForm() {
     },
   });
 
-  function onSubmit(values: TSignUpForm) {
+  async function onSubmit(values: TSignUpForm) {
     console.log("Sign Up Data:", values);
     // API call or other logic here
+       try {
+      const res = await signUp(values).unwrap();
+      localStorage.setItem("accessToken", res.access_token);
+      toast.success("Signed up successfully!");
+      navigate("/sign-up"); // Or wherever
+    } catch (err: any) {
+      const message = err?.data?.message || "Sign up failed";
+      toast.error(message);
+      console.error("Sign up error:", err);
+    }
+    
   }
 
   return (

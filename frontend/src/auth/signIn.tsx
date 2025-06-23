@@ -13,9 +13,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useSignInMutation } from "@/redux/services/authApi";
+import { toast } from "sonner";
 
 export function SignInForm() {
+  const navigate = useNavigate();
+  const [signIn, { isLoading }] = useSignInMutation();
   const form = useForm<TAuthForm>({
     resolver: zodResolver(AuthFormSchema),
     defaultValues: {
@@ -24,9 +28,20 @@ export function SignInForm() {
     },
   });
 
-  function onSubmit(values: TAuthForm) {
+  async function onSubmit(values: TAuthForm) {
     console.log(values);
+
     // Handle sign in logic here
+    try {
+      const res = await signIn(values).unwrap();
+      console.log("access token=>", res);
+      localStorage.setItem("accessToken", res.access_token);
+      toast.success("Signed in successfully!");
+      navigate("/"); // or your desired route
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Invalid credentials");
+      console.error(err);
+    }
   }
 
   return (
@@ -71,7 +86,7 @@ export function SignInForm() {
           </Form>
           <div className="mt-4 text-center text-sm">
             Don't have an account?{" "}
-            <Link to="/signup" className="underline text-blue-600 dark:text-blue-400">
+            <Link to="/sign-up" className="underline text-blue-600 dark:text-blue-400">
               Sign up
             </Link>
           </div>
