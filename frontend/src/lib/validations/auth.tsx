@@ -30,6 +30,12 @@ export const SignUpFormSchema = AuthFormSchema.extend({
     .min(10, "Phone number must be at least 10 digits")
     .max(15, "Phone number must be less than 15 digits")
     .regex(/^\+?[0-9]{10,15}$/, "Invalid phone number"),
+
+  countryCode: z
+    .string()
+    .length(2, "Invalid country code")
+    .regex(/^[A-Z]{2}$/, "Country code must be 2 uppercase letters"),
+
   confirmPassword: z.string().min(1, "Please confirm your password"),
 })
 .refine((data) => data.password === data.confirmPassword, {

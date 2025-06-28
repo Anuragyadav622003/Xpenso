@@ -16,10 +16,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link, useNavigate } from "react-router-dom";
 import { useSignUpMutation } from "@/redux/services/authApi";
 import { toast } from "sonner";
+import { countryOptions } from "@/components/ui/country-code";
 
 export function SignUpForm() {
-    const [signUp, { isLoading }] = useSignUpMutation();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [signUp, { isLoading }] = useSignUpMutation();
+
   const form = useForm<TSignUpForm>({
     resolver: zodResolver(SignUpFormSchema),
     defaultValues: {
@@ -28,24 +30,28 @@ export function SignUpForm() {
       phone: "",
       password: "",
       confirmPassword: "",
+      countryCode: "IN",
     },
   });
 
-  async function onSubmit(values: TSignUpForm) {
-    console.log("Sign Up Data:", values);
-    // API call or other logic here
-       try {
+  const onSubmit = async (values: TSignUpForm) => {
+    try {
       const res = await signUp(values).unwrap();
+
       localStorage.setItem("accessToken", res.access_token);
-      toast.success("Signed up successfully!");
-      navigate("/sign-up"); // Or wherever
+      localStorage.setItem("user", JSON.stringify(res.user));
+
+      toast.success("Account created successfully!");
+      
+      // Efficient navigation after 1s
+      setTimeout(() => {
+        navigate("/sign-in", { replace: true });
+      }, 1000);
     } catch (err: any) {
-      const message = err?.data?.message || "Sign up failed";
-      toast.error(message);
-      console.error("Sign up error:", err);
+      toast.error(err?.data?.message || "Sign up failed");
+      console.error("Signup error:", err);
     }
-    
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">
@@ -63,12 +69,13 @@ export function SignUpForm() {
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} />
+                      <Input placeholder="John Doe" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="email"
@@ -76,12 +83,13 @@ export function SignUpForm() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="john@example.com" {...field} />
+                      <Input type="email" placeholder="john@example.com" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="phone"
@@ -89,12 +97,38 @@ export function SignUpForm() {
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
                     <FormControl>
-                      <Input type="tel" placeholder="+1234567890" {...field} />
+                      <Input type="tel" placeholder="9876543210" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="countryCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Country</FormLabel>
+                    <FormControl>
+                      <select
+                        {...field}
+                        className="w-full h-10 border border-input rounded-md px-3 dark:bg-background"
+                        disabled={isLoading}
+                      >
+                        <option value="">Select country</option>
+                        {countryOptions.map((country) => (
+                          <option key={country.value} value={country.value}>
+                            {country.label}
+                          </option>
+                        ))}
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="password"
@@ -102,12 +136,13 @@ export function SignUpForm() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
+                      <Input type="password" placeholder="••••••••" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="confirmPassword"
@@ -115,17 +150,19 @@ export function SignUpForm() {
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
+                      <Input type="password" placeholder="••••••••" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Sign Up
+
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Signing up..." : "Sign Up"}
               </Button>
             </form>
           </Form>
+
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
             <Link to="/sign-in" className="underline text-blue-600 dark:text-blue-400">

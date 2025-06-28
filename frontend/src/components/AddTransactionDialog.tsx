@@ -28,8 +28,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { TransactionFormData } from '../types/transaction';
-import { useTransactions } from '../contexts/TransactionContext';
 
+import { toast } from "@/hooks/use-toast"; // ✅ Import this at the top
+
+import { useAddTransactionMutation } from '@/redux/services/transectionApi';
 const transactionSchema = z.object({
   amount: z.string().min(1, 'Amount is required').refine(
     (val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0,
@@ -51,7 +53,8 @@ export const AddTransactionDialog: React.FC<AddTransactionDialogProps> = ({
   open,
   onOpenChange,
 }) => {
-  const { addTransaction } = useTransactions();
+  //const { addTransaction } = useTransactions();
+const [addTransaction] = useAddTransactionMutation();
   
   const form = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
@@ -65,20 +68,31 @@ export const AddTransactionDialog: React.FC<AddTransactionDialogProps> = ({
     },
   });
 
-  const onSubmit = (data: TransactionFormData) => {
-    const datetime = new Date(`${data.date}T${data.time}`);
-    
-    addTransaction({
-      amount: parseFloat(data.amount),
-      type: data.type,
-      description: data.description,
-      date: datetime,
-      category: data.category,
+const onSubmit = async (data: TransactionFormData) => {
+  try {
+    await addTransaction({
+      ...data,
+      amount: parseFloat(data.amount), // Convert amount to number
+    }).unwrap();
+
+    toast({
+      title: "Transaction Added",
+      description: `${data.type === 'credit' ? 'Credit' : 'Debit'} of ₹${parseFloat(data.amount).toFixed(2)} added successfully.`,
     });
 
     form.reset();
     onOpenChange(false);
-  };
+    console.log("Transaction submitted");
+  } catch (error) {
+    toast({
+      title: "Error",
+      description: "Failed to add transaction. Please try again.",
+      variant: "destructive",
+    });
+    console.error("Add transaction error:", error);
+  }
+};
+
 
   const categories = [
     'Food', 'Transportation', 'Housing', 'Entertainment', 

@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = "postgresql://postgres.ztweecyblnexjqutvjgu:expansetracker1234@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+  directUrl    = "postgresql://postgres.ztweecyblnexjqutvjgu:expansetracker1234@aws-0-ap-south-1.pooler.supabase.com:5432/postgres"
+  relationMode = "prisma"
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String
+  phone        String        @unique
+  email        String        @unique
+  countryCode  String        @default("IN")
+  password     String
+  createdAt    DateTime      @default(now())
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          String          @id @default(uuid())
+  amount      Float
+  type        TransactionType
+  description String
+  date        DateTime
+  category    String
+   avatarUrl    String? 
+  userId      Int
+  user        User            @relation(fields: [userId], references: [id])
+}
+
+enum TransactionType {
+  credit
+  debit
+}

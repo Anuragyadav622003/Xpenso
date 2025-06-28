@@ -4,7 +4,7 @@ import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { DateRange as ReactDayPickerDateRange } from 'react-day-picker';
 import { DateRange } from '../types/transaction';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
