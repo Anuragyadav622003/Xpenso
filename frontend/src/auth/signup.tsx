@@ -17,10 +17,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSignUpMutation } from "@/redux/services/authApi";
 import { toast } from "sonner";
 import { countryOptions } from "@/components/ui/country-code";
+import { useAppDispatch } from "./redux/hooks";
+import { initializeAuth } from "@/redux/slices/authSlice";
 
 export function SignUpForm() {
   const navigate = useNavigate();
   const [signUp, { isLoading }] = useSignUpMutation();
+   const dispatch = useAppDispatch();
 
   const form = useForm<TSignUpForm>({
     resolver: zodResolver(SignUpFormSchema),
@@ -41,6 +44,7 @@ export function SignUpForm() {
       localStorage.setItem("accessToken", res.access_token);
       localStorage.setItem("user", JSON.stringify(res.user));
 
+       dispatch(initializeAuth());
       toast.success("Account created successfully!");
       
       // Efficient navigation after 1s
