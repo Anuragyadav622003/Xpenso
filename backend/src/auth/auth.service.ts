@@ -38,7 +38,7 @@ export class AuthService {
     res.cookie('access_token', token.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // ✅ enable cross-site cookie
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
@@ -65,7 +65,7 @@ export class AuthService {
     res.cookie('access_token', token.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // ✅ enable cross-site cookie
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
