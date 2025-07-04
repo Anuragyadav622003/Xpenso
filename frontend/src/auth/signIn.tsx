@@ -16,8 +16,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link, useNavigate } from "react-router-dom";
 import { useSignInMutation } from "@/redux/services/authApi";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { login } from "@/redux/slices/authSlice";
 
 export function SignInForm() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [signIn, { isLoading }] = useSignInMutation();
 
@@ -32,15 +35,13 @@ export function SignInForm() {
   const onSubmit = async (values: TAuthForm) => {
     try {
       const res = await signIn(values).unwrap();
+  
+  
+      // ✅ Dispatch user to Redux (NOT access token)
+      dispatch(login(res.user));
 
-      localStorage.setItem("accessToken", res.access_token);
-      localStorage.setItem("user", JSON.stringify(res.user));
-
-      toast.success("Signed in successfully!", {
-        duration: 1000,
-        onAutoClose: () => navigate("/", { replace: true }),
-      });
-
+      toast.success("Signed in successfully!");
+      setTimeout(() => navigate("/", { replace: true }), 500);
     } catch (err: any) {
       toast.error(err?.data?.message || "Invalid credentials");
       console.error("Sign in error:", err);
@@ -63,10 +64,11 @@ export function SignInForm() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="your@email.com" 
-                        {...field} 
-                        disabled={isLoading} 
+                      <Input
+                        type="email"
+                        placeholder="your@email.com"
+                        {...field}
+                        disabled={isLoading}
                       />
                     </FormControl>
                     <FormMessage />
@@ -81,11 +83,11 @@ export function SignInForm() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="password" 
-                        placeholder="••••••••" 
-                        {...field} 
-                        disabled={isLoading} 
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                        disabled={isLoading}
                       />
                     </FormControl>
                     <FormMessage />
@@ -100,9 +102,9 @@ export function SignInForm() {
           </Form>
 
           <div className="mt-4 text-center text-sm">
-            Don't have an account?{" "}
-            <Link 
-              to="/sign-up" 
+            Don&apos;t have an account?{" "}
+            <Link
+              to="/sign-up"
               className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
             >
               Sign up

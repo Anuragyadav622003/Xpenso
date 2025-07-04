@@ -1,20 +1,24 @@
+// redux/slices/authSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  countryCode: string;
+  createdAt: string;
+}
+
 interface AuthState {
-  token: string | null;
+  user: User | null;
+  isAuthenticated: boolean;
   isInitialized: boolean;
 }
 
-// Safely get token from localStorage (works in SSR environments)
-const getInitialToken = (): string | null => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem("accessToken");
-  }
-  return null;
-};
-
 const initialState: AuthState = {
-  token: getInitialToken(),
+  user: null,
+  isAuthenticated: false,
   isInitialized: false,
 };
 
@@ -22,24 +26,30 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login: (state, action: PayloadAction<string>) => {
-      state.token = action.payload;
+    login: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+      state.isAuthenticated = true;
       state.isInitialized = true;
-      if (typeof window !== 'undefined') {
-        localStorage.setItem("accessToken", action.payload);
-      }
+       // ✅ Save user to localStorage
+      localStorage.setItem("user", JSON.stringify(action.payload));
     },
     logout: (state) => {
-      state.token = null;
+      state.user = null;
+      state.isAuthenticated = false;
       state.isInitialized = true;
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("user")
-      }
+
+      localStorage.removeItem("user");
     },
-    initializeAuth: (state) => {
-      state.token = getInitialToken();
+    initializeAuth: (state, action: PayloadAction<User | null>) => {
+      state.user = action.payload;
+      state.isAuthenticated = !!action.payload;
       state.isInitialized = true;
+       // Optional: Update storage (in case /auth/me returns updated user)
+      if (action.payload) {
+        localStorage.setItem("user", JSON.stringify(action.payload));
+      } else {
+        localStorage.removeItem("user");
+      }
     },
   },
 });

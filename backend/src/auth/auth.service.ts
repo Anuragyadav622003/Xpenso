@@ -4,6 +4,7 @@ import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -12,10 +13,11 @@ export class AuthService {
     private jwt: JwtService
   ) {}
 
-  async signup(dto: SignupDto) {
+  async signup(dto: SignupDto, res: Response) {
     const existing = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
+
     if (existing) throw new BadRequestException('Email already registered');
 
     const hash = await bcrypt.hash(dto.password, 10);
@@ -32,19 +34,26 @@ export class AuthService {
 
     const token = this.generateToken(user.id, user.email);
 
-    // Exclude password from response
+    // ✅ Set the HttpOnly cookie
+    res.cookie('access_token', token.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
     const { password, ...userWithoutPassword } = user;
 
     return {
-      access_token: token.access_token,
       user: userWithoutPassword,
     };
   }
 
-  async signin(dto: SigninDto) {
+  async signin(dto: SigninDto, res: Response) {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
+
     if (!user) throw new BadRequestException('Invalid credentials');
 
     const match = await bcrypt.compare(dto.password, user.password);
@@ -52,13 +61,24 @@ export class AuthService {
 
     const token = this.generateToken(user.id, user.email);
 
-    // Exclude password from response
+    // ✅ Set the HttpOnly cookie
+    res.cookie('access_token', token.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
     const { password, ...userWithoutPassword } = user;
 
     return {
-      access_token: token.access_token,
       user: userWithoutPassword,
     };
+  }
+
+  logout(res: Response) {
+    res.clearCookie('access_token');
+    return { message: 'Logged out successfully' };
   }
 
   private generateToken(userId: number, email: string) {

@@ -1,10 +1,14 @@
-import { useSelector } from "react-redux";
+
+
+
+
+// routes/ProtectedRoute.tsx
+import { useAppSelector } from "@/redux/hooks";
 import { Navigate } from "react-router-dom";
-import { RootState } from "@/redux/store";
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const token = useSelector((state: RootState) => state.auth.token);
-  return token ? <>{children}</> : <Navigate to="/sign-in" replace />;
-};
+export default function ProtectedRoute({ children }: { children: JSX.Element }) {
+  const { isAuthenticated, isInitialized } = useAppSelector((state) => state.auth);
 
-export default ProtectedRoute;
+  if (!isInitialized) return <div>Loading...</div>;
+  return isAuthenticated ? children : <Navigate to="/sign-in" replace />;
+}
