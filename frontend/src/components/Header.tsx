@@ -85,7 +85,7 @@ const dispatch = useDispatch();
       const user = localStorage.getItem('user');
       if (user) {
         const parsed = JSON.parse(user);
-        const name = parsed.name || '';
+        const name = parsed.email || '';
         const initials = name
           .split(' ')
           .map(part => part[0])
