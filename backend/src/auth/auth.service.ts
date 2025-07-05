@@ -1,10 +1,10 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Req } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
+import { Response,Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -75,7 +75,27 @@ export class AuthService {
       user: userWithoutPassword,
     };
   }
+ async getMe(req: Request) {
+  const userData = req['user']; // payload from JWT (e.g., { sub: 1, email: 'test@example.com' })
+    console.log(userData)
+  if (!userData || !userData.sub) {
+    throw new Error('User information not found in request');
+  }
 
+  const user = await this.prisma.user.findUnique({
+    where: { id: userData.sub },
+  });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const { password, ...userWithoutPassword } = user;
+
+  return {
+    user: userWithoutPassword,
+  };
+}
   logout(res: Response) {
     res.clearCookie('access_token');
     return { message: 'Logged out successfully' };

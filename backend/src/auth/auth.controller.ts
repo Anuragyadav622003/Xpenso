@@ -21,7 +21,9 @@ export class AuthController {
     @UseGuards(JwtCookieGuard)
   @Get('me')
   getMe(@Req() req: Request) {
-    return req['user']; // Added by JwtMiddleware
+   // return req['user']; // Added by JwtMiddleware
+   console.log("hello")
+    return this.authService.getMe(req);
   }
 
   @Post('logout')

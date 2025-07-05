@@ -46,6 +46,7 @@ const authSlice = createSlice({
       state.isInitialized = true;
        // Optional: Update storage (in case /auth/me returns updated user)
       if (action.payload) {
+       
         localStorage.setItem("user", JSON.stringify(action.payload));
       } else {
         localStorage.removeItem("user");

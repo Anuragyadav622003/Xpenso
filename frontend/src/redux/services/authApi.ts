@@ -38,10 +38,12 @@ export const authApi = createApi({
       }),
     }),
     getProfile: builder.query<User, void>({
+    
       query: () => ({
         url: "/auth/me",
         method: "GET",
       }),
+      
     }),
     logout: builder.mutation<{ message: string }, void>({
       query: () => ({

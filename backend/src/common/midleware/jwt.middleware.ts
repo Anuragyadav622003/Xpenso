@@ -50,7 +50,7 @@ export class JwtCookieGuard implements CanActivate {
 
     const token = req.cookies?.['access_token'];
     if (!token) throw new UnauthorizedException('No token provided');
-
+    
     try {
       const payload = await this.jwt.verifyAsync(token);
       req.user = payload; // ✅ now properly typed
