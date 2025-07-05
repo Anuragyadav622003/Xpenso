@@ -95,7 +95,6 @@ const AuthInitializer = ({ children }: { children: React.ReactNode }) => {
   if (!isLoading) {
     if (error) {
       console.warn("Session expired or invalid token.");
-      navigate("/sign-in");
     } else {
       dispatch(initializeAuth(data ?? null));
     }
