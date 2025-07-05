@@ -92,9 +92,8 @@ export class AuthService {
 
   const { password, ...userWithoutPassword } = user;
 
-  return {
-    user: userWithoutPassword,
-  };
+  return userWithoutPassword
+  
 }
   logout(res: Response) {
     res.clearCookie('access_token');

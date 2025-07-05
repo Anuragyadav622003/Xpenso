@@ -42,6 +42,7 @@ const authSlice = createSlice({
     },
     initializeAuth: (state, action: PayloadAction<User | null>) => {
       state.user = action.payload;
+    
       state.isAuthenticated = !!action.payload;
       state.isInitialized = true;
        // Optional: Update storage (in case /auth/me returns updated user)
