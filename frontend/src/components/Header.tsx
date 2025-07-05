@@ -65,13 +65,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useDispatch } from 'react-redux';
 import { logout } from '@/redux/slices/authSlice';
+import { useNavigate } from 'react-router-dom';
 
 export const Header: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const navigate = useNavigate();
 const dispatch = useDispatch();
   const handleProfileClick = () => {
     console.log('View Profile');
+    navigate('/profile');
   };
 
   const handleLogout = () => {
@@ -83,16 +86,18 @@ const dispatch = useDispatch();
   const avatarText = (): string => {
     try {
       const user = localStorage.getItem('user');
-      if (user) {
-        const parsed = JSON.parse(user);
-        const name = parsed.email || '';
-        const initials = name
-          .split(' ')
-          .map(part => part[0])
-          .join('')
-          .toUpperCase();
-        return initials;
-      }
+     if (user) {
+  const parsed = JSON.parse(user);
+  const name = parsed.name || '';
+  const initials = name
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2); // ✅ Limit to 2 characters max
+  return initials;
+}
+
     } catch (error) {
       console.error('Error parsing user from localStorage:', error);
     }

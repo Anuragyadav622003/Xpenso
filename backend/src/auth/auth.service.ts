@@ -5,6 +5,7 @@ import { SigninDto } from './dto/signin.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Response,Request } from 'express';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -95,6 +96,22 @@ export class AuthService {
   return userWithoutPassword
   
 }
+  async updateProfile(req: Request, dto: UpdateProfileDto) {
+    const userData = req['user']; // { sub, email }
+    if (!userData || !userData.sub) {
+      throw new BadRequestException('Invalid user session');
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userData.sub },
+      data: {
+        ...dto,
+      },
+    });
+
+    const { password, ...userWithoutPassword } = updatedUser;
+    return { user: userWithoutPassword };
+  }
   logout(res: Response) {
     res.clearCookie('access_token');
     return { message: 'Logged out successfully' };

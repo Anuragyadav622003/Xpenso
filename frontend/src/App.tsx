@@ -82,6 +82,7 @@ import NotFound from "./pages/NotFound";
 import { SignInForm } from "./auth/signIn";
 import { SignUpForm } from "./auth/signup";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import Profile from "./pages/profile";
 
 const queryClient = new QueryClient();
 
@@ -120,6 +121,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Index />
+                  </ProtectedRoute>
+                }
+              />
+               <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile/>
                   </ProtectedRoute>
                 }
               />
