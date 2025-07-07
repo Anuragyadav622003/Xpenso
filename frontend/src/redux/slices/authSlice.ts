@@ -26,13 +26,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login: (state, action: PayloadAction<User>) => {
-      state.user = action.payload;
-      state.isAuthenticated = true;
-      state.isInitialized = true;
-       // ✅ Save user to localStorage
-      localStorage.setItem("user", JSON.stringify(action.payload));
-    },
+   
     logout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
@@ -41,20 +35,20 @@ const authSlice = createSlice({
       localStorage.removeItem("user");
     },
     initializeAuth: (state, action: PayloadAction<User | null>) => {
-      state.user = action.payload;
-    
-      state.isAuthenticated = !!action.payload;
+     const user = action.payload;
+      state.user = user;
+      state.isAuthenticated = !!user;
       state.isInitialized = true;
-       // Optional: Update storage (in case /auth/me returns updated user)
-      if (action.payload) {
-       
-        localStorage.setItem("user", JSON.stringify(action.payload));
+
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
       } else {
         localStorage.removeItem("user");
       }
+     
     },
   },
 });
 
-export const { login, logout, initializeAuth } = authSlice.actions;
+export const {  logout, initializeAuth } = authSlice.actions;
 export default authSlice.reducer;

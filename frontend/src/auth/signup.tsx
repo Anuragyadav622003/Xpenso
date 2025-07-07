@@ -190,7 +190,7 @@ import { useSignUpMutation } from "@/redux/services/authApi";
 import { toast } from "sonner";
 import { countryOptions } from "@/components/ui/country-code";
 import { useDispatch } from "react-redux";
-import { login } from "@/redux/slices/authSlice";
+import { initializeAuth} from "@/redux/slices/authSlice";
 
 export function SignUpForm() {
   const navigate = useNavigate();
@@ -215,7 +215,7 @@ export function SignUpForm() {
 
       // ✅ Do NOT store token in localStorage
       // ✅ Just update Redux with user data
-      dispatch(login(res.user));
+      dispatch(initializeAuth(res?.user));
 
       toast.success("Account created successfully!");
       setTimeout(() => navigate("/", { replace: true }), 1000);

@@ -17,7 +17,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSignInMutation } from "@/redux/services/authApi";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
-import { login } from "@/redux/slices/authSlice";
+import { initializeAuth } from "@/redux/slices/authSlice";
+
 
 export function SignInForm() {
   const dispatch = useDispatch();
@@ -36,9 +37,9 @@ export function SignInForm() {
     try {
       const res = await signIn(values).unwrap();
      
-
+        
       // ✅ Dispatch user to Redux (NOT access token)
-      dispatch(login(res.user));
+      dispatch(initializeAuth(res?.user));
 
       toast.success("Signed in successfully!");
       setTimeout(() => navigate("/", { replace: true }), 500);

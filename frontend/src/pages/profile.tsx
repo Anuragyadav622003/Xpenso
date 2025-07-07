@@ -1,8 +1,13 @@
 import React, { useEffect } from "react";
 import { useGetProfileQuery, useUpdateProfileMutation } from "@/redux/services/authApi";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader } from "@/components/ui/Loader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,11 +16,22 @@ import { User, Mail, Phone, Globe } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { countryOptions } from "@/components/ui/country-code";
+import { useDispatch } from "react-redux";
+import { initializeAuth } from "@/redux/slices/authSlice";
 
-// Form validation schema
+// ------------------------
+// ✅ Schema
+// ------------------------
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   phone: z.string().min(6, "Phone number is too short"),
@@ -24,7 +40,11 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
+// ------------------------
+// ✅ Component
+// ------------------------
 const Profile = () => {
+  const dispatch = useDispatch();
   const { data: user, isLoading } = useGetProfileQuery();
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
 
@@ -33,31 +53,48 @@ const Profile = () => {
     defaultValues: {
       name: "",
       phone: "",
-      countryCode: "IN", // Default to India like in sign-up form
-    }
+      countryCode: "IN",
+    },
   });
 
-  // Populate form with user data when available
+  // ------------------------
+  // ✅ Populate form on user load
+  // ------------------------
   useEffect(() => {
     if (user) {
       form.reset({
-        name: user.name || "",
-        phone: user.phone || "",
-        countryCode: user.countryCode || "IN",
+        name: user.name ?? "",
+        phone: user.phone ?? "",
+        countryCode: user.countryCode ?? "IN",
       });
     }
   }, [user, form]);
 
+  // ------------------------
+  // ✅ Submit Handler
+  // ------------------------
   const onSubmit = async (data: ProfileFormValues) => {
     try {
-      await updateProfile(data).unwrap();
-      toast.success("Profile updated successfully", {
-        description: "Your changes have been saved",
-        position: "top-center",
-      });
-    } catch (error) {
+      const response = await updateProfile(data).unwrap();
+
+      const updatedUser = response["user"] ?? null;
+
+      if (updatedUser) {
+        dispatch(initializeAuth(updatedUser));
+        toast.success("Profile updated successfully", {
+          description: "Your changes have been saved.",
+          position: "top-center",
+        });
+      } else {
+        throw new Error("Unexpected response from server.");
+      }
+    } catch (error: any) {
+      console.error("Update Profile Error:", error);
       toast.error("Failed to update profile", {
-        description: "Please try again later",
+        description:
+          error?.data?.message ||
+          error?.message ||
+          "Something went wrong. Please try again later.",
         position: "top-center",
       });
     }
@@ -92,11 +129,15 @@ const Profile = () => {
               </div>
             </div>
           </CardHeader>
+
           <CardContent className="pt-6">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                  {/* Name Field */}
+                  {/* Name */}
                   <FormField
                     control={form.control}
                     name="name"
@@ -107,14 +148,18 @@ const Profile = () => {
                           Full Name
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder="Your full name" {...field} disabled={isUpdating} />
+                          <Input
+                            placeholder="Your full name"
+                            {...field}
+                            disabled={isUpdating}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  {/* Phone Field */}
+                  {/* Phone */}
                   <FormField
                     control={form.control}
                     name="phone"
@@ -125,14 +170,18 @@ const Profile = () => {
                           Phone Number
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder="9876543210" {...field} disabled={isUpdating} />
+                          <Input
+                            placeholder="9876543210"
+                            {...field}
+                            disabled={isUpdating}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  {/* Country Field */}
+                  {/* Country */}
                   <FormField
                     control={form.control}
                     name="countryCode"
@@ -160,7 +209,7 @@ const Profile = () => {
                     )}
                   />
 
-                  {/* Read-only Email Field */}
+                  {/* Email - Readonly */}
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <Mail className="h-4 w-4" />
@@ -176,6 +225,7 @@ const Profile = () => {
                   </FormItem>
                 </div>
 
+                {/* Buttons */}
                 <div className="flex justify-end gap-4 pt-4">
                   <Button
                     type="button"
@@ -188,7 +238,7 @@ const Profile = () => {
                   <Button type="submit" disabled={isUpdating}>
                     {isUpdating ? (
                       <>
-                        <Loader  />
+                        <Loader />
                         Saving...
                       </>
                     ) : (
