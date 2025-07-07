@@ -98,7 +98,8 @@ const AuthInitializer = ({ children }: { children: React.ReactNode }) => {
        dispatch(initializeAuth(null)); // ✅ force isInitialized = true
       // navigate("/sign-in"); 
     } else {
-      dispatch(initializeAuth(data ?? null));
+     
+      dispatch(initializeAuth(data['user'] ?? null));
     }
   }
 }, [data, error, isLoading, dispatch, navigate]);
